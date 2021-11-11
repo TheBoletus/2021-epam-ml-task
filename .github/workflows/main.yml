@@ -1,0 +1,21 @@
+# Workflow to help you get started with Actions
+
+name: CI
+
+on: push
+
+jobs:
+  code_quality:
+    runs-on: ubuntu-latest
+    name: Checks with black and isort
+    container: python:3.9
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run script
+        run: |
+          pip install flake8 isort
+          ls -la
+          flake8 .
+          isort --check .
