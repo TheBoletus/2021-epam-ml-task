@@ -15,13 +15,23 @@ and testing:
 - has single label
 - has no less than two word in description.
 """
+import argparse
+import json
+import logging
 from collections import defaultdict
 
-LABEL_MARKER = '__label__'
-FILTER = True
+from src.util import DATASET_FOLDER, MODEL_FOLDER, set_logging
 
-# ToDo: add documentation
-# ToDo: add command line parameters
+LABEL_MARKER = '__label__'
+
+
+def get_config():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-d',
+        '--dataset_name',
+        help='Name of dataset file at /dataset that needs preprocessing')
+    return parser.parse_args()
 
 
 def get_label(label):
@@ -33,9 +43,7 @@ def is_label(label):
 
 
 def is_description(description):
-    if FILTER:
-        return description.isalpha()
-    return True
+    return description.isalpha()
 
 
 def is_enough_data(data_item):
@@ -56,67 +64,46 @@ def dataset_generator(file_name):
                 }
 
 
-def write_row(_file, row_data):
-    label = row_data.get('labels')[0]
-    description = row_data.get('desc')
-    row = f'{" ".join(description)};{label}\n'
+def write_row(_file, row_data, label_index):
+    row = f'{" ".join(row_data)};{label_index}\n'
     _file.write(row)
 
 
 def log_statistics(counted, written):
-    # ToDo: change prints to logging
-    print('Statistics on labels, encountered / written / percentage:')
+    logging.info('Statistics on labels, encountered / written / percentage:')
     for item in counted.keys():
         pct = int(written.get(item) / counted.get(item) * 100)
-        print(f'{item}: {counted.get(item)} / {written.get(item)} / {pct}')
-
-
-class DatasetSplitter:
-    distribution = (
-        'train',
-        'train',
-        'train',
-        'train',
-        'train',
-        'train',
-        'train',
-        'train',
-        'test',
-        'test'
-    )
-
-    def __init__(self):
-        self.labels = defaultdict(int)
-
-    def get_direction(self, label_name):
-        dataset_block_name = self.distribution[self.labels[label_name]]
-        self.labels[label_name] += 1
-        if self.labels[label_name] > 9:
-            self.labels[label_name] = 0
-        return dataset_block_name
+        logging.info('{}: {} / {} / {}'.format(
+            item,
+            counted.get(item),
+            written.get(item),
+            pct))
 
 
 if __name__ == '__main__':
+    set_logging()
+    cfg = get_config()
+
+    labels_index = []
     labels_written = defaultdict(int)
     label_counter = defaultdict(int)
-    splitter = DatasetSplitter()
 
-    with open('../dataset/train.csv', 'w') as train, \
-            open('../dataset/test.csv', 'w') as test:
-        datasets = {
-            'train': train,
-            'test': test
-        }
-
-        records = [x for x in dataset_generator('../dataset/dataset.csv')
+    with open(f'{DATASET_FOLDER}/train.csv', 'w') as train:
+        dataset_file = f'{DATASET_FOLDER}/{cfg.dataset_name}'
+        records = [x for x in dataset_generator(dataset_file)
                    if is_enough_data(x)]
         for record in records:
             label_value = record.get('labels')[0]
+            if label_value not in labels_index:
+                labels_index.append(label_value)
             if (labels_written.get(label_value) is None)\
                     or labels_written.get(label_value) < 1200:
-                write_row(datasets.get(splitter.get_direction(label_value)),
-                          record)
+                index = labels_index.index(label_value)
+                write_row(train, record.get('desc'), index)
                 labels_written[label_value] += 1
             label_counter[label_value] += 1
+
+    with open(f'{MODEL_FOLDER}/labels.json', 'w') as _l:
+        _l.write(json.dumps(labels_index, indent=4))
 
     log_statistics(label_counter, labels_written)
