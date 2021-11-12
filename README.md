@@ -11,6 +11,7 @@
 [Running the HTTP service](#running-the-http-service)
 
 
+
 ## Model details
 
 The current classification model was trained using:
@@ -87,6 +88,8 @@ to the repository.
 weighted avg       0.91      0.91      0.91      5520
 ```
 
+
+
 ## Training the model
 
 1) Download the dataset from
@@ -119,6 +122,8 @@ Whatever randomization index is used for training, the saved model file will
 have it in its name. Current model is called `classifier_24` thus the index
 was 24.
 
+
+
 ## Running the Streamlit service
 
 To run the service go to the project's root folder and execute:
@@ -127,9 +132,12 @@ To run the service go to the project's root folder and execute:
 streamlit run src/app_stream.py
 ```
 
+
+
 ## Running the HTTP service
 
 There are two ways to run the HTTP service: with or without Docker
+
 
 ### Runnin without Docker
 
@@ -138,6 +146,7 @@ To run the service go the project's root folder and execute:
 ```bash
 python -m src.app_service
 ```
+
 
 ### Running with Docker
 
