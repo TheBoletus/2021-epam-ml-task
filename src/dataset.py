@@ -57,7 +57,7 @@ def get_label(label):
 def is_label(label):
     """
     Checks if given text looks like a label.
-    Current requirement: text starts with '__lable__'
+    Current requirement: text starts with '__label__'
 
     :param label: str
     :return: bool
@@ -87,7 +87,7 @@ def is_enough_data(data_item):
     :return: bool
     """
     return len(data_item.get('labels')) == 1 \
-           and len(data_item.get('desc')) > 2
+           and len(data_item.get('desc')) > 2  # noqa: E127
 
 
 def dataset_generator(file_name):
