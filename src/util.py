@@ -1,3 +1,7 @@
+"""
+Shared utility functions and classes.
+"""
+
 import json
 import logging
 import pickle

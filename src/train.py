@@ -1,3 +1,20 @@
+"""
+Script for training a model of goods classifier.
+
+Input dataset gets split into training and testing groups. The splitting
+ration can be changed via command line. The randomization state for
+the splitting can be changed as well, and each value will yield
+a reproducible sequence.
+
+Training pipeline consists of:
+- TfidfVectorizer (term frequency–inverse document frequency)
+- MultinomialNB (naive Bayes - probabilistic - classifier)
+
+Trained model gets saved as 'classifier_X' where X is the randomization
+index used during training.
+
+"""
+
 import argparse
 import logging
 import pickle
@@ -15,6 +32,12 @@ from src.util import DATASET_FOLDER, MODEL_FOLDER, set_logging
 
 
 def get_config():
+    """
+    Utility function for setting up the ArgumentParser.
+    Returns the parsed parameters.
+
+    :return: ArgumentParser
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--dataset_name',
                         help='Name of preprocessed dataset file at /dataset')
@@ -26,6 +49,17 @@ def get_config():
 
 
 def log_results(_predictions, test_labels):
+    """
+    Utility function for logging the results of trained model.
+    The following data gets logged:
+    - confusion matrix
+    - classification report
+    - accuracy score
+
+    :param _predictions: sklearn.Pipeline
+    :param test_labels: list[str]
+    :return: None
+    """
     numpy.set_printoptions(linewidth=150)
     logging.info('Confusion matrix:\n{}'.format(
         confusion_matrix(test_labels, _predictions)
@@ -41,9 +75,9 @@ if __name__ == '__main__':
     cfg = get_config()
 
     dataset_name = f'{DATASET_FOLDER}/{cfg.dataset_name}'
-    df_train = pd.read_csv(dataset_name, header=None, delimiter=';')
-    train_data = df_train.iloc[:, 0].tolist()
-    train_labels = df_train.iloc[:, 1].tolist()
+    df_train = pd.read_csv(dataset_name, header=0, delimiter=';')
+    train_data = df_train['description'].values
+    train_labels = df_train['label'].values
 
     X_train, X_test, y_train, y_test = train_test_split(
         train_data,
@@ -53,7 +87,7 @@ if __name__ == '__main__':
 
     model = make_pipeline(TfidfVectorizer(), MultinomialNB())
     model.fit(X_train, y_train)
-    model_name = f'{MODEL_FOLDER}/classifier'
+    model_name = f'{MODEL_FOLDER}/classifier_{cfg.randomization_index}'
     with open(model_name, 'wb') as pickle_file:
         pickle.dump(model, pickle_file)
 

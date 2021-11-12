@@ -1,5 +1,5 @@
 """
-HTTP service for interacting with model.
+HTTP service for interacting with model. See README.md for details.
 
 Supported requests:
 
@@ -27,7 +27,7 @@ from src.util import MODEL_FOLDER, Model, set_logging
 
 routes = web.RouteTableDef()
 model = Model(
-    f'{MODEL_FOLDER}/classifier',
+    f'{MODEL_FOLDER}/classifier_0',
     f'{MODEL_FOLDER}/labels.json'
 )
 
