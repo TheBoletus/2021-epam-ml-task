@@ -3,6 +3,7 @@ Script for basic querying the model HTTP service.
 """
 import argparse
 import json
+
 import requests
 
 
