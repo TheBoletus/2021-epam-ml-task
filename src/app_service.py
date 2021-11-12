@@ -27,7 +27,7 @@ from src.util import MODEL_FOLDER, Model, set_logging
 
 routes = web.RouteTableDef()
 model = Model(
-    f'{MODEL_FOLDER}/classifier_0',
+    f'{MODEL_FOLDER}/classifier_24',
     f'{MODEL_FOLDER}/labels.json'
 )
 
@@ -75,7 +75,6 @@ async def get_prediction(request):
 # Main loop
 
 if __name__ == '__main__':
-    lg.info('Starting server')
     set_logging()
     app = web.Application()
     app.add_routes(routes)

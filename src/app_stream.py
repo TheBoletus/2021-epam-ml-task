@@ -25,7 +25,7 @@ def load_model():
     Function loads the pre-trained model.
     :return: binary
     """
-    with open('./model/classifier_0', 'rb') as _m:
+    with open('./model/classifier_24', 'rb') as _m:
         return pickle.load(_m)
 
 
