@@ -8,7 +8,7 @@ import pickle
 import streamlit as st
 
 
-@st.cache
+@st.cache(allow_output_mutation=True)
 def load_labels():
     """
     Function loads the pre-generated list of all labels encountered
@@ -19,7 +19,7 @@ def load_labels():
         return json.load(_l)
 
 
-@st.cache
+@st.cache(allow_output_mutation=True)
 def load_model():
     """
     Function loads the pre-trained model.
